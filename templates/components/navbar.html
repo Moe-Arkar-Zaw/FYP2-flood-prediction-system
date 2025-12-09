@@ -1,0 +1,44 @@
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="brand">
+            <div class="logo-mark">FS</div>
+            <div>
+                <div class="brand-title">FloodSafe</div>
+                <div class="brand-sub">Live safety radar</div>
+            </div>
+        </div>
+
+        <button class="nav-toggle" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+
+        <div class="nav-links">
+            <!-- Public links -->
+            <a href="/user/public_dashboard" data-route="/dashboard">Dashboard</a>
+            <a href="/user/api/route-finder" data-route="/route-finder">Route Finder</a>
+            <a href="/api/top-flooded-streets-page" data-route="/top-flooded">Top Flooded</a>
+            <a href="/api/emergency" data-route="/emergency">Emergency</a>
+
+            <!-- Admin-only links -->
+            {% if session.get('role') == 'admin' %}
+            <a href="/admin/upload_video" data-route="/admin">Admin</a>
+            {% endif %}
+        </div>
+
+        <div class="nav-right">
+            <div class="profile-menu">
+                <button class="profile-trigger">
+                    <img src="{{ current_user.profile_image_url or url_for('static', filename='img/default_user.png') }}" class="profile-icon" alt="Profile">
+                    <span class="profile-caret">▼</span>
+                </button>
+
+                <div class="dropdown">
+                    <a href="/user-profile/profile">Profile</a>
+                    <a href="#" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script src="{{ url_for('static', filename='js/logout.js') }}"></script>

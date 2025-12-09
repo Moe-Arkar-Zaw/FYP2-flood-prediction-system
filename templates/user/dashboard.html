@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Safety Dashboard</h1>
+            <p class="subtitle">Live alerts, rainfall outlook, and routes.</p>
+        </div>
+        <div class="pill">Live feed enabled</div>
+    </div>
+
+    <div class="grid two">
+        <!-- Latest Flood Alerts -->
+        <section class="card section-alerts">
+            <div class="card-header">
+                <h2>Latest Flood Alerts</h2>
+                <span class="badge">Auto-refresh</span>
+            </div>
+            <div id="alertsList" class="list">
+                <p class="muted">Loading alerts...</p>
+            </div>
+        </section>
+
+        <!-- Rainfall Forecast -->
+        <section class="card section-weather">
+            <div class="card-header">
+                <h2>Rainfall Forecast</h2>
+                <span class="badge">24h</span>
+            </div>
+            <p id="rainfallText" class="forecast-text">Loading forecast...</p>
+        </section>
+    </div>
+
+    <!-- Top 3 Areas -->
+    <section class="card section-areas">
+        <div class="card-header">
+            <h2>Top 3 Popular Areas</h2>
+            <span class="helper-text">Highest flood severity spots</span>
+        </div>
+        <div class="areas-grid" id="areasGrid">
+            <p class="muted">Loading areas...</p>
+        </div>
+    </section>
+
+    <!-- Flood Map -->
+    <section class="card map-card section-map">
+        <div class="card-header">
+            <h2>Interactive Flood Map</h2>
+            <div class="chip-row">
+                <button class="chip filter-btn" data-filter="safe">Safe Routes</button>
+                <button class="chip filter-btn" data-filter="flooded">Flooded Routes</button>
+                <button class="chip filter-btn" data-filter="shelters">Shelters</button>
+                <button class="chip filter-btn" data-filter="areas">Top Areas</button>
+                <button class="chip filter-btn clear-btn" id="clearFilter">Clear</button>
+            </div>
+        </div>
+
+        <div class="map-shell">
+            <div id="floodMap" style="height: 500px;"></div>
+        </div>
+
+        <div class="map-legend">
+            <span class="badge">Green: Safe</span>
+            <span class="badge">Yellow: Alert</span>
+            <span class="badge">Red: Severe</span>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
+{% endblock %}

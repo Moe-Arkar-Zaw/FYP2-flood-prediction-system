@@ -1,0 +1,203 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(247, 249, 253, 0.9);
+    border-bottom: 1px solid rgba(31, 42, 61, 0.06);
+    box-shadow: 0 10px 24px rgba(20, 55, 120, 0.08);
+}
+
+.nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 18px;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #4f8bff, #6fd6ff);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    color: #0c203c;
+}
+
+.brand-title {
+    font-weight: 800;
+    letter-spacing: -0.2px;
+}
+
+.brand-sub {
+    font-size: 12px;
+    color: #6f7b90;
+}
+
+.nav-links {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: #1f2a3d;
+    text-decoration: none;
+    padding: 9px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: background 0.2s ease, color 0.2s ease, border 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-links a:hover {
+    background: rgba(79, 139, 255, 0.08);
+}
+
+.nav-links a.active {
+    background: rgba(79, 139, 255, 0.15);
+    color: #1f2a3d;
+    border: 1px solid rgba(79, 139, 255, 0.25);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-self: end;
+}
+
+.admin-pill {
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.profile-menu {
+    position: relative;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(31, 42, 61, 0.08);
+    padding: 6px 10px;
+    border-radius: 12px;
+    color: #1f2a3d;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(31, 42, 61, 0.08);
+}
+
+.profile-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-caret {
+    font-size: 11px;
+    color: #6f7b90;
+}
+
+.dropdown {
+    position: absolute;
+    right: 0;
+    top: 48px;
+    background: #ffffff;
+    border: 1px solid rgba(31, 42, 61, 0.08);
+    border-radius: 12px;
+    padding: 10px;
+    width: 180px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+    display: none;
+}
+
+.dropdown a {
+    display: block;
+    text-decoration: none;
+    color: #1f2a3d;
+    padding: 8px 10px;
+    border-radius: 10px;
+}
+
+.dropdown a:hover {
+    background: rgba(79, 139, 255, 0.08);
+}
+
+.profile-menu.open .dropdown {
+    display: block;
+}
+
+.nav-toggle {
+    display: none;
+    background: none;
+    border: 1px solid rgba(31, 42, 61, 0.12);
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+}
+
+.nav-toggle span {
+    display: block;
+    height: 2px;
+    background: #1f2a3d;
+    margin: 6px 0;
+    transition: all 0.2s ease;
+}
+
+@media (max-width: 900px) {
+    .nav-inner {
+        grid-template-columns: auto auto;
+        grid-template-areas:
+            "brand toggle"
+            "links links"
+            "right right";
+        align-items: start;
+    }
+
+    .brand { grid-area: brand; }
+    .nav-links { grid-area: links; }
+    .nav-right { grid-area: right; }
+
+    .nav-links {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        display: none;
+        padding-bottom: 8px;
+    }
+
+    .nav-inner.open .nav-links,
+    .nav-inner.open .nav-right {
+        display: flex;
+    }
+
+    .nav-right {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        display: none;
+    }
+
+    .nav-toggle {
+        display: inline-block;
+        justify-self: end;
+    }
+}

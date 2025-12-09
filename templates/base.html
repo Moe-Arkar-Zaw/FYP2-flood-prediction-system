@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Flood System{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/route_finder.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/top_flooded.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/emergency.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/map.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+    <!-- Leaflet Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+
+    {% if not hide_nav %}
+        <!-- NAVBAR -->
+        {% include 'components/navbar.html' %}
+    {% endif %}
+
+    <!-- MAIN CONTENT (always shown) -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% if not hide_nav %}
+        <!-- FOOTER -->
+        {% include 'components/footer.html' %}
+
+        <!-- JS FILES -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="{{ url_for('static', filename='js/map_utils.js') }}"></script>
+    {% endif %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

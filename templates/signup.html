@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+{% set hide_nav = True %}
+{% block content %}
+<div class="signup-shell">
+    <div class="signup-card">
+        <div class="signup-header">
+            <h1>Join For Safety</h1>
+            <h2>Sign up</h2>
+        </div>
+
+        <form id="signupForm" class="signup-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter a strong password" required>
+            </div>
+
+            <button type="submit" id="signupBtn" class="signup-btn">Sign Up</button>
+
+            <div id="signupMessage" class="signup-message"></div>
+        </form>
+
+        <p class="signup-footer">Already have an account? <a href="{{ url_for('auth.login_page') }}">Log in here</a></p>
+    </div>
+</div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+{% endblock %}

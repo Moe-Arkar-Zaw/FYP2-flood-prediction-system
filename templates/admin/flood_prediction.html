@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Flood Prediction - Admin{% endblock %}
+
+{% block content %}
+<div class="page-container admin-page">
+    {% set active_tab = 'predictions' %}
+    {% include "components/admin_tabs.html" with context %}
+    
+
+    <h1 class="page-title">Flood Prediction Analysis</h1>
+
+    <!-- Frames Preview Section -->
+    <section class="card frames-card">
+        <h2>Extracted Frames</h2>
+        <p class="section-description">
+            These frames are extracted from the uploaded video for analysis.
+        </p>
+
+        <div class="frames-grid">
+            {% for frame in frames %}
+                <div class="frame-box">
+                    <img src="{{ url_for('static', filename='frames/' ~ frame) }}" alt="Frame">
+                </div>
+            {% else %}
+                <p class="no-frames-text">No frames available.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Prediction Section -->
+    <section class="card prediction-card">
+        <h2>Prediction Summary</h2>
+
+        <button id="runPredictionBtn" class="btn primary-btn" {% if video_id %} data-video-id="{{ video_id }}" {% endif %}>
+            Run Prediction
+        </button>
+        {% if not video_id %}
+        <p class="warning-text">Please upload a video before running prediction.</p>
+        {% endif %}
+
+        <!-- This section is empty at first; JS will fill it -->
+        <div id="predictionResult" class="prediction-result hidden">
+            <h3>Results</h3>
+
+            <p><strong>Water Level:</strong> <span id="waterLevelText">--</span> meters</p>
+
+            <p><strong>Severity:</strong>
+                <span id="severityText" class="severity-tag">--</span>
+            </p>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_prediction.js') }}"></script>
+{% endblock %}

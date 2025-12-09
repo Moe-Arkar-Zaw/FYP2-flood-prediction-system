@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Route Finder{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Safest Route Finder</h1>
+            <p class="subtitle">Pick your start and destination to calculate the safest, driest path.</p>
+        </div>
+        <div class="pill">Routing powered by live severity data</div>
+    </div>
+
+    <section class="card route-input-card">
+        <div class="card-header">
+            <h2>Trip Details</h2>
+            <span class="helper-text">Auto-complete streets from latest map data</span>
+        </div>
+
+        <div class="grid two">
+            <div class="form-group">
+                <label for="startStreet">Starting Street</label>
+                <input list="streetList" id="startStreet" placeholder="Enter start street">
+            </div>
+
+            <div class="form-group">
+                <label for="endStreet">Destination Street</label>
+                <input list="streetList" id="endStreet" placeholder="Enter destination">
+            </div>
+        </div>
+
+        <!-- Datalist for auto-complete -->
+        <datalist id="streetList">
+            {% for street_name in streets %}
+                <option value="{{ street_name }}"></option>
+            {% endfor %}
+        </datalist>
+
+        <div class="card-actions">
+            <button id="findRouteBtn" class="btn btn-primary">Find Safest Route</button>
+            <p id="routeDistance" class="distance-text hidden"></p>
+        </div>
+    </section>
+
+    <section class="card map-card">
+        <div class="card-header">
+            <h2>Route Preview</h2>
+            <span class="helper-text">Safe segments highlighted in green</span>
+        </div>
+        <div class="map-shell">
+            <div id="routeMap"></div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/route_finder.js') }}"></script>
+{% endblock %}

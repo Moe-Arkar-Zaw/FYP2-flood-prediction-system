@@ -1,0 +1,32 @@
+.map-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.map-shell {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: #f5f7fb;
+    box-shadow: 0 10px 24px rgba(33, 63, 108, 0.12);
+    height: 470px;
+}
+
+#floodMap,
+#routeMap {
+    width: 100%;
+    height: 470px;
+}
+
+.map-filters,
+.map-legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.map-legend {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 13px;
+}

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Flood Video - Admin{% endblock %}
+
+{% block content %}
+<div class="page-container admin-page">
+
+    {% include "components/admin_tabs.html" with context %}
+    {% set active_tab = 'upload' %}
+
+    <h1 class="page-title">Upload Flood Video</h1>
+
+    <!-- Flash messages from Flask (optional, if backend uses them) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="card upload-card">
+        <h2>Video Information</h2>
+        <p class="section-description">
+            Select the street, upload the flood video file, and set the upload timestamp.
+        </p>
+
+        <!-- IMPORTANT: enctype for file upload -->
+        <form action="{{ url_for('admin.upload_video') }}"
+              method="POST"
+              enctype="multipart/form-data"
+              id="uploadVideoForm">
+
+            <!-- Street Name -->
+            <div class="form-group">
+                <label for="street_name">Street Name</label>
+                <input type="text" id="street_name" name="street_name" placeholder="Type street name" list="streets_list" autocomplete="off">
+                <datalist id="streets_list">
+                    {% for street in streets %}
+                        <option value="{{ street.street_name }}">
+                            {{ street.street_name }}
+                        </option>
+                    {% endfor %}
+                </datalist>
+            </div>
+
+            <!-- Video File -->
+            <div class="form-group">
+                <label for="video">Flood Video File</label>
+                <input type="file"
+                       name="video"
+                       id="video"
+                       accept="video/*"
+                       required>
+            </div>
+
+            <!-- Timestamp -->
+            <div class="form-group">
+                <label for="timestamp">Upload Timestamp</label>
+                <input type="datetime-local"
+                       name="timestamp"
+                       id="timestamp"
+                       required>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-row">
+                <button type="submit" class="btn primary-btn">
+                    Upload
+                </button>
+                <button type="button"
+                        class="btn secondary-btn"
+                        id="cancelUploadBtn">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_upload_video.js') }}"></script>
+{% endblock %}

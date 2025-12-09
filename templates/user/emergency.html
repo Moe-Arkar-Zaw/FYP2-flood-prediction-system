@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Information{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    
+    <div class="page-header">
+        <h1 class="page-title">Emergency Hub</h1>
+        <p class="subtitle">Hotlines, shelters & essential safety checklists.</p>
+        <div class="pill">Stay safe, stay informed</div>
+    </div>
+
+    <!-- CONTACTS -->
+    <section class="card animated-card">
+        <div class="card-header">
+            <h2>🚨 Emergency Contacts</h2>
+            <span class="helper-text">Tap to call directly</span>
+        </div>
+        <div class="contact-list" id="contactList"></div>
+    </section>
+
+    <!-- SHELTERS -->
+    <section class="card animated-card">
+        <div class="card-header">
+            <h2>🏠 Nearby Emergency Shelters</h2>
+            <span class="helper-text">Capacity indicators are advisory</span>
+        </div>
+        <div class="shelter-list" id="shelterList"></div>
+    </section>
+
+    <!-- SAFETY -->
+    <section class="card animated-card">
+        <div class="card-header">
+            <h2>🛟 Flood Safety & Preparedness</h2>
+            <span class="helper-text">Tap to expand safety phases</span>
+        </div>
+
+        <div class="tips-section">
+
+            <div class="tip-group collapsible">
+                <h3>Before Flood</h3>
+                <ul id="beforeList"></ul>
+            </div>
+
+            <div class="tip-group collapsible">
+                <h3>During Flood</h3>
+                <ul id="duringList"></ul>
+            </div>
+
+            <div class="tip-group collapsible">
+                <h3>After Flood</h3>
+                <ul id="afterList"></ul>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/emergency.js') }}"></script>
+{% endblock %}

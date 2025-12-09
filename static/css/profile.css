@@ -1,0 +1,41 @@
+.profile-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.profile-left {
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 18px;
+    border: 3px solid var(--accent);
+    object-fit: cover;
+    box-shadow: 0 12px 28px rgba(79, 139, 255, 0.15);
+}
+
+.file-upload-label {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 9px 12px;
+    background: #fff;
+    color: var(--text);
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 20px rgba(33, 63, 108, 0.08);
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.file-upload-label input {
+    display: none;
+}
+
+.profile-right p {
+    margin-bottom: 10px;
+    font-size: 15px;
+}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Top 3 Flooded Streets{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Flooded Streets Radar</h1>
+            <p class="subtitle">Track the top three hotspots and their movement.</p>
+        </div>
+        <div class="pill">Updated hourly</div>
+    </div>
+
+    <!-- Section 1 — Top 3 Streets -->
+    <section class="card">
+        <div class="card-header">
+            <h2>Latest High-Risk Streets</h2>
+            <span class="helper-text">Peak water levels measured in meters</span>
+        </div>
+        <div id="topStreetsList" class="streets-list">
+            <!-- JS will populate top 3 streets -->
+        </div>
+    </section>
+
+    <!-- Section 2 — Water Level Trend Graph -->
+    <section class="card">
+        <div class="card-header flex-between">
+            <div>
+                <h2>Water Level Trend Comparison</h2>
+            </div>
+
+            <!-- Helper text top-right -->
+            <div class="helper-text">
+                Graph's water levels are measured from the most affected segment of a street.
+            </div>
+        </div>
+
+        <div id="graphFilters" class="graph-filters"></div>
+        <canvas id="trendChart"></canvas>
+    </section>
+
+
+
+    <!-- Section 3 — Detailed Status -->
+    <section class="card">
+        <div class="card-header">
+            <h2>Current Status & Trend</h2>
+            <span class="helper-text">Severity color matches map legend</span>
+        </div>
+        <div id="detailedStatus" class="status-cards">
+            <!-- JS will populate detailed cards -->
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/top_flooded.js') }}"></script>
+{% endblock %}

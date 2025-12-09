@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">My Profile</h1>
+            <p class="subtitle">Keep your contact details up to date.</p>
+        </div>
+        <div class="pill">Account</div>
+    </div>
+
+    <section class="card profile-card">
+        <div class="profile-left">
+            <img src="{{ user.profile_image_url or url_for('static', filename='img/default_user.png') }}"
+                 class="profile-avatar">
+
+            <form id="uploadImageForm" enctype="multipart/form-data">
+                <label class="file-upload-label">
+                    Upload New Photo
+                    <input type="file" name="profile_image" id="profileImageInput" accept="image/*">
+                </label>
+            </form>
+        </div>
+
+        <div class="profile-right">
+            <p><strong>Name:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+
+            <a href="/user-profile/edit-profile" class="btn btn-primary">Edit Profile</a>
+            <a href="/user-profile/change-password" class="btn btn-secondary">Change Password</a>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

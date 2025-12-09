@@ -1,0 +1,102 @@
+.streets-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.street-card {
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(33, 63, 108, 0.08);
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.street-card .severity-tag {
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-weight: 700;
+    color: #041120;
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.graph-filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+}
+
+.status-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.status-box {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(33, 63, 108, 0.08);
+}
+
+.streets-list, .status-cards {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.street-card, .status-box {
+    flex: 1 1 calc(33% - 10px);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: #fff;
+}
+
+.severity-tag {
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.filter-pill {
+    padding: 8px 16px;
+    margin: 6px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background: #e5e5e5;
+    color: #333;
+    font-weight: 600;
+    transition: 0.25s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filter-pill:hover {
+    background: #d0d0d0;
+}
+
+.filter-pill.active {
+    background: #4a90e2;
+    color: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">Edit Profile</h1>
+            <p class="subtitle">Your name and email are used for notifications.</p>
+        </div>
+        <div class="pill">Account</div>
+    </div>
+
+    <section class="card">
+        <form id="editProfileForm">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" value="{{ user.username }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" value="{{ user.email }}" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/edit_profile.js') }}"></script>
+{% endblock %}

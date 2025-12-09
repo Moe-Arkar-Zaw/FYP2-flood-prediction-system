@@ -1,0 +1,13 @@
+<div id="{{ modal_id|default('alertModal') }}" class="modal hidden">
+    <div class="modal-content">
+        <h3>{{ title|default('Create Alert Message') }}</h3>
+
+        <textarea id="{{ textarea_id|default('alertMessage') }}"
+                  placeholder="{{ placeholder|default('Enter alert message...') }}"></textarea>
+
+        <div class="modal-buttons">
+            <button id="{{ confirm_id|default('sendAlertBtn') }}" class="btn primary-btn">Publish</button>
+            <button id="{{ cancel_id|default('closeModalBtn') }}" class="btn secondary-btn">Cancel</button>
+        </div>
+    </div>
+</div>

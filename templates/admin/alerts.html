@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Review & Publish Alerts - Admin{% endblock %}
+
+{% block content %}
+<div class="page-container admin-page">
+
+    {% include "components/admin_tabs.html" with context %}
+    {% set active_tab = 'alerts' %}
+
+    <h1 class="page-title">Review & Publish Alerts</h1>
+
+    <section class="card alerts-card">
+        <h2>Predicted Flood Records</h2>
+
+        <table class="alerts-table">
+            <thead>
+                <tr>
+                    <th>Street Name</th>
+                    <th>Water Level (m)</th>
+                    <th>Severity</th>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in predictions %}
+                <tr>
+                    <td>{{ record.street_name }}</td>
+                    <td>{{ record.water_level }}</td>
+
+                    <!-- Severity with color tag -->
+                    <td>
+                        <span class="severity-tag 
+                            {% if record.severity == 'normal' %}severity-normal
+                            {% elif record.severity == 'alert' %}severity-alert
+                            {% elif record.severity == 'severe' %}severity-severe
+                            {% endif %}">
+                            {{ record.severity | capitalize }}
+                        </span>
+                    </td>
+
+                    <td>{{ record.timestamp }}</td>
+
+                    <td>
+                        <button 
+                            class="btn publish-btn"
+                            data-prediction-id="{{ record.prediction_id }}">
+                            Publish Alert
+                        </button>
+                    </td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="5" class="no-records">No predictions available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+</div>
+
+{% include "components/alert_modal.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin_alerts.js') }}"></script>
+{% endblock %}
