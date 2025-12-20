@@ -41,13 +41,40 @@
 
         <!-- This section is empty at first; JS will fill it -->
         <div id="predictionResult" class="prediction-result hidden">
-            <h3>Results</h3>
+            <h3>Current Prediction Results</h3>
 
-            <p><strong>Water Level:</strong> <span id="waterLevelText">--</span> meters</p>
+            <div class="result-grid">
+                <div class="result-item">
+                    <strong>Water Level:</strong> 
+                    <span id="waterLevelText" class="result-value">--</span>
+                </div>
 
-            <p><strong>Severity:</strong>
-                <span id="severityText" class="severity-tag">--</span>
-            </p>
+                <div class="result-item">
+                    <strong>Severity:</strong>
+                    <span id="severityText" class="severity-tag">--</span>
+                </div>
+            </div>
+            
+            <div class="prediction-details">
+                <p><strong>Video ID:</strong> <span id="videoIdText">{{ video_id or '--' }}</span></p>
+                <p><strong>Prediction Time:</strong> <span id="predictionTimeText">--</span></p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Recent Predictions Section -->
+    <section class="card history-card">
+        <h2>Recent Predictions</h2>
+        <p class="section-description">Last 5 predictions and average water level</p>
+        
+        <div id="recentPredictions" class="recent-predictions">
+            <p>Loading...</p>
+        </div>
+        
+        <div id="averageStats" class="average-stats hidden">
+            <h3>Statistics</h3>
+            <p><strong>Average Water Level (Last 5):</strong> <span id="avgWaterLevel">--</span></p>
+            <p><strong>Most Common Severity:</strong> <span id="commonSeverity">--</span></p>
         </div>
     </section>
 </div>
@@ -55,4 +82,65 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/admin_prediction.js') }}"></script>
+<style>
+.result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.result-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.result-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #2563eb;
+    margin-top: 10px;
+}
+
+.prediction-details {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.recent-predictions {
+    margin: 20px 0;
+}
+
+.prediction-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #2563eb;
+}
+
+.prediction-row.severe { border-left-color: #dc2626; }
+.prediction-row.alert { border-left-color: #f59e0b; }
+.prediction-row.normal { border-left-color: #10b981; }
+
+.average-stats {
+    margin-top: 25px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+}
+
+.average-stats h3 {
+    margin-top: 0;
+    color: white;
+}
+</style>
 {% endblock %}

@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, request
 from backend.services.top_3_streets import get_top_flooded_streets, get_flood_trend
-from backend.models import Shelter
+from backend.models import Shelter, FloodPrediction
 from backend.auth.auth_routes import login_required
 
 api_bp = Blueprint("api_bp", __name__)
@@ -85,3 +85,35 @@ def get_safety_info():
     }
     return jsonify({"tips": safety_info})
 
+
+# Get recent predictions
+@api_bp.route("/predictions", methods=["GET"])
+def get_predictions():
+    """
+    Get recent flood predictions
+    Query params:
+        limit: Number of predictions to return (default: 5)
+    """
+    try:
+        limit = request.args.get('limit', 5, type=int)
+        
+        predictions = FloodPrediction.query.order_by(
+            FloodPrediction.prediction_time.desc()
+        ).limit(limit).all()
+        
+        result = []
+        for pred in predictions:
+            result.append({
+                "prediction_id": pred.prediction_id,
+                "video_id": pred.video_id,
+                "street_id": pred.street_id,
+                "street_name": pred.street.street_name if pred.street else "Unknown",
+                "water_level": float(pred.water_level),
+                "severity": pred.severity,
+                "prediction_time": pred.prediction_time.isoformat() if pred.prediction_time else None
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error fetching predictions: {str(e)}")
+        return jsonify({"error": str(e)}), 500

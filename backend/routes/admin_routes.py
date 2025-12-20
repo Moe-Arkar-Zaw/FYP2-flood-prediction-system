@@ -5,7 +5,7 @@ import os
 
 from backend.database import db
 from backend.models import Street, Video, FloodPrediction, Alert
-from backend.services.video_processor import save_uploaded_video # Admin Video Upload Method
+from backend.services.video_processor import save_uploaded_video, get_frames_for_prediction # Admin Video Upload Method
 from backend.services.flood_predictor import predict_water_level  # Admin Run Prediction Method
 from backend.services.video_processor import extract_frames 
 from backend.auth.auth_routes import admin_required
@@ -34,6 +34,14 @@ def upload_video():
         return render_template("admin/upload_video.html", streets=streets)
 
     try:
+        # Clear previous session data
+        import sys
+        print("=== NEW VIDEO UPLOAD STARTED ===", flush=True)
+        sys.stdout.flush()
+        session.pop("latest_video_id", None)
+        session.pop("frame_paths", None)
+        print("Session cleared", flush=True)
+        
         # Extract from data
         street_name = request.form.get("street_name")
         timestamp = request.form.get("timestamp")
@@ -65,12 +73,21 @@ def upload_video():
         db.session.commit()
 
         session["latest_video_id"] = new_video.video_id
-        print("Latest video ID stored in session:", session['latest_video_id'])
+        print("Latest video ID stored in session:", session['latest_video_id'], flush=True)
+        
+        # Extract frames immediately after upload
+        print(f"Extracting frames from uploaded video: {saved_path}", flush=True)
+        frame_paths = extract_frames(saved_path, max_frames=10, save_frames=True)
+        print(f"Extracted {len(frame_paths)} frames: {frame_paths}", flush=True)
+        
+        # Store frame paths in session for display
+        session["frame_paths"] = frame_paths
 
         return jsonify({
             "message": "Video uploaded sucessfully",
             "video_id": new_video.video_id,
-            "path": saved_path
+            "path": saved_path,
+            "frames_extracted": len(frame_paths)
         }), 200
     
     except Exception as e:
@@ -79,41 +96,74 @@ def upload_video():
 @admin_bp.route("/prediction_page")
 @admin_required
 def prediction_page():
+    import sys
     video_id = session.get("latest_video_id")
+    frame_paths = session.get("frame_paths", [])
+    
+    print(f"=== PREDICTION PAGE DEBUG ===", flush=True)
+    sys.stdout.flush()
+    print(f"Video ID from session: {video_id}", flush=True)
+    print(f"Frame paths from session: {frame_paths}", flush=True)
+    print(f"Number of frames: {len(frame_paths)}", flush=True)
 
     if not video_id:
+        print("No video_id in session")
         return render_template("admin/flood_prediction.html", frames=[], video_id=None)
     
     video = Video.query.get(video_id)
     
     if not video:
+        print("Video not found in database")
         return render_template("admin/flood_prediction.html", frames=[], video_id=None)
     
-    frames = extract_frames(video.video_path)
+    # If frames weren't extracted during upload, extract them now
+    if not frame_paths:
+        print(f"Extracting frames on prediction page for video: {video.video_path}")
+        frame_paths = extract_frames(video.video_path, max_frames=10, save_frames=True)
+        session["frame_paths"] = frame_paths
+        print(f"Extracted {len(frame_paths)} frames")
+    
+    print(f"Passing {len(frame_paths)} frames to template")
+    print(f"Frame paths: {frame_paths}")
 
-    return render_template("admin/flood_prediction.html", frames=frames, video_id=video_id)
+    return render_template("admin/flood_prediction.html", frames=frame_paths, video_id=video_id)
 
 
 @admin_bp.route("/run_prediction", methods=["POST"])
 def run_prediction():
     try:
+        import sys
+        print("=== RUN PREDICTION STARTED ===", flush=True)
+        sys.stdout.flush()
+        
         # Sends video_id after upload
         video_id = request.json.get("video_id")
+        print(f"Video ID: {video_id}", flush=True)
+        
         if not video_id:
             return jsonify({"error": "video_id is required"}), 400
         
         # Fetch video from DB
         video = Video.query.get(video_id)
+        print(f"Video found: {video}", flush=True)
+        
         if not video:
             return jsonify({"error": "Video not found"}), 404
         
         street_id = video.street_id 
+        print(f"Video path: {video.video_path}", flush=True)
 
-        # Extract frames
-        frames = extract_frames(video.video_path)
+        # Extract frames for prediction (numpy arrays)
+        frames = get_frames_for_prediction(video.video_path)
+        print(f"Frames extracted: {len(frames)}", flush=True)
+        
+        if not frames or len(frames) == 0:
+            return jsonify({"error": "Could not extract frames from video"}), 400
 
         # Run ML Model
-        water_level =predict_water_level(frames)
+        print("Running water level prediction...", flush=True)
+        water_level = predict_water_level(frames)
+        print(f"Water level result: {water_level}", flush=True)
 
         # Determin severity 
         if water_level < 0.3:
@@ -149,7 +199,13 @@ def run_prediction():
         })
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 5
+        import sys
+        print(f"=== PREDICTION ERROR ===", flush=True)
+        print(f"Error: {str(e)}", flush=True)
+        sys.stdout.flush()
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
     
 # List all flood predictions from FloodPrediction table
 @admin_bp.route("/prediction", methods=['GET'])

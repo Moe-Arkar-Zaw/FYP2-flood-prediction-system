@@ -52,16 +52,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 messageContainer.style.display = "block";
                 messageContainer.style.backgroundColor = "#d4edda";
                 messageContainer.style.color = "#155724";
-                messageContainer.textContent = " Video uploaded successfully!";
+                messageContainer.textContent = "✓ Video uploaded successfully! Redirecting to prediction page...";
 
-                // Reset form EXCEPT timestamp
-                const oldTimestamp = timestampInput.value;
-                form.reset();
-                timestampInput.value = oldTimestamp;
-
-                // Highlight for clarity
-                messageContainer.style.opacity = "1";
-                setTimeout(() => { messageContainer.style.opacity = "0.8"; }, 1000);
+                // Redirect to prediction page after 1 second
+                setTimeout(() => {
+                    window.location.href = "/admin/prediction_page";
+                }, 1000);
 
             } else {
                 // Styled error message
