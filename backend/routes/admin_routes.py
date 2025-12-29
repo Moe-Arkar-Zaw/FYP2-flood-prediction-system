@@ -8,6 +8,7 @@ from backend.models import Street, Video, FloodPrediction, Alert
 from backend.services.video_processor import save_uploaded_video, get_frames_for_prediction # Admin Video Upload Method
 from backend.services.flood_predictor import predict_water_level  # Admin Run Prediction Method
 from backend.services.video_processor import extract_frames 
+from backend.services.time_series_forecaster import get_forecast_summary
 from backend.auth.auth_routes import admin_required
 
 admin_bp = Blueprint("admin", __name__)
@@ -281,3 +282,47 @@ def admin_alerts_page():
             "timestamp": p.prediction_time.strftime("%Y-%m-%d %H:%M:%S")
         })
     return render_template("admin/alerts.html", predictions=formatted_predictions)
+
+
+# Time Series Forecasting Page
+@admin_bp.route("/forecast", methods=["GET"])
+@admin_required
+def forecast_page():
+    """
+    Display time series forecasting page for flood predictions
+    """
+    streets = Street.query.all()
+    street_id = request.args.get('street_id', type=int)
+    
+    return render_template("admin/forecast.html", streets=streets, selected_street_id=street_id)
+
+
+# API endpoint for forecast data
+@admin_bp.route("/api/forecast", methods=["GET"])
+@admin_required
+def get_forecast():
+    """
+    Get forecast data for display
+    """
+    try:
+        street_id = request.args.get('street_id', type=int)
+        history_days = request.args.get('history_days', 30, type=int)
+        forecast_days = request.args.get('forecast_days', 7, type=int)
+        
+        # Get forecast summary
+        summary = get_forecast_summary(street_id, history_days, forecast_days)
+        
+        # Format timestamps for JSON
+        for item in summary['historical']:
+            item['timestamp'] = item['timestamp'].isoformat() if item['timestamp'] else None
+        
+        for item in summary['forecast']:
+            item['timestamp'] = item['timestamp'].isoformat() if item['timestamp'] else None
+        
+        return jsonify(summary)
+    
+    except Exception as e:
+        print(f"Forecast error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500

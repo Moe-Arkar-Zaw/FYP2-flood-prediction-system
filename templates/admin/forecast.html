@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Flood Forecast - Admin{% endblock %}
+
+{% block content %}
+<div class="page-container admin-page">
+    {% set active_tab = 'forecast' %}
+    {% include "components/admin_tabs.html" with context %}
+    
+    <h1 class="page-title">Water Level Forecasting</h1>
+    <p class="page-subtitle">Time series prediction of future flood levels based on historical data</p>
+
+    <!-- Street Filter -->
+    <section class="card filter-card">
+        <h2>Filter by Street</h2>
+        <div class="filter-controls">
+            <select id="streetFilter" class="form-select">
+                <option value="">All Streets</option>
+                {% for street in streets %}
+                    <option value="{{ street.street_id }}" {% if street.street_id == selected_street_id %}selected{% endif %}>
+                        {{ street.street_name }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <button id="loadForecastBtn" class="btn primary-btn">Load Forecast</button>
+        </div>
+    </section>
+
+    <!-- Statistics Summary -->
+    <section class="card stats-card">
+        <h2>Historical Statistics</h2>
+        <div id="statisticsGrid" class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Average Water Level</div>
+                <div class="stat-value" id="statMean">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Maximum Level</div>
+                <div class="stat-value" id="statMax">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Minimum Level</div>
+                <div class="stat-value" id="statMin">--</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Trend</div>
+                <div class="stat-value" id="statTrend">--</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Forecast Chart -->
+    <section class="card chart-card">
+        <h2>Water Level Forecast</h2>
+        <div id="loadingMessage" class="loading-message">
+            Select a street and click "Load Forecast" to view predictions
+        </div>
+        <div class="chart-container" style="display:none;" id="chartContainer">
+            <canvas id="forecastChart"></canvas>
+        </div>
+    </section>
+
+    <!-- Forecast Table -->
+    <section class="card table-card">
+        <h2>7-Day Forecast Details</h2>
+        <div id="forecastTable">
+            <p class="empty-message">No forecast data available</p>
+        </div>
+    </section>
+</div>
+
+<style>
+.filter-card {
+    margin-bottom: 30px;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.form-select {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stat-box {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.chart-card {
+    min-height: 400px;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+.loading-message, .empty-message {
+    text-align: center;
+    color: #6b7280;
+    padding: 40px;
+}
+
+.forecast-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.forecast-table th,
+.forecast-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.forecast-table th {
+    background: #f9fafb;
+    font-weight: 600;
+}
+
+.forecast-table tr:hover {
+    background: #f9fafb;
+}
+
+.severity-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.severity-badge.normal {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.severity-badge.alert {
+    background: #fed7aa;
+    color: #92400e;
+}
+
+.severity-badge.severe {
+    background: #fee2e2;
+    color: #991b1b;
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admin_forecast.js') }}"></script>
+{% endblock %}

@@ -1,3 +1,5 @@
+let recentPredictionsChart = null;
+
 document.addEventListener("DOMContentLoaded", function () {
     const runPredictionBtn = document.getElementById("runPredictionBtn");
 
@@ -118,6 +120,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
                 
+                // Create chart
+                createRecentPredictionsChart(predictions);
+                
                 // Display predictions
                 let html = "";
                 predictions.forEach(pred => {
@@ -157,5 +162,107 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("recentPredictions").innerHTML = 
                     "<p>Could not load recent predictions.</p>";
             });
+    }
+    
+    // Create chart for recent predictions
+    function createRecentPredictionsChart(predictions) {
+        const ctx = document.getElementById("recentPredictionsChart");
+        if (!ctx) return;
+        
+        // Reverse to show oldest to newest
+        const sortedPredictions = [...predictions].reverse();
+        
+        // Prepare data with street names
+        const labels = sortedPredictions.map(p => {
+            const date = new Date(p.prediction_time);
+            const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const streetName = p.street_name || `Street #${p.street_id}`;
+            return [streetName, timeStr];  // Multi-line label
+        });
+        
+        const waterLevels = sortedPredictions.map(p => parseFloat(p.water_level));
+        
+        // Color points based on severity
+        const pointColors = sortedPredictions.map(p => {
+            if (p.severity === 'severe') return '#dc2626';
+            if (p.severity === 'alert') return '#f59e0b';
+            return '#10b981';
+        });
+        
+        // Destroy existing chart
+        if (recentPredictionsChart) {
+            recentPredictionsChart.destroy();
+        }
+        
+        // Create new chart
+        recentPredictionsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Water Level',
+                    data: waterLevels,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    pointBackgroundColor: pointColors,
+                    pointBorderColor: pointColors,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Recent Predictions Timeline',
+                        font: { size: 16 }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const pred = sortedPredictions[context.dataIndex];
+                                return [
+                                    `Water Level: ${pred.water_level}`,
+                                    `Severity: ${pred.severity.toUpperCase()}`,
+                                    `Street: ${pred.street_name || 'Street #' + pred.street_id}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1.0,
+                        title: {
+                            display: true,
+                            text: 'Water Level (0-1.0)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2);
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Prediction Time'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
     }
 });

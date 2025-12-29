@@ -3,6 +3,7 @@ from backend.models import Alert, Street, Shelter, Area, Video, FloodPrediction
 from backend.database import db
 from datetime import datetime, timedelta
 from backend.services.route_optimizer import find_safest_route
+from backend.services.rainfall_forecast import get_rainfall_forecast, get_weather_description
 from backend.auth.auth_routes import login_required
 
 user_bp = Blueprint("user_bp", __name__)
@@ -98,6 +99,40 @@ def dashboard_data():
             "flooded_routes": flooded_routes,
             "shelters": shelters
         })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@user_bp.route("/rainfall-forecast", methods=["GET"])
+def rainfall_forecast():
+    """
+    Get rainfall forecast from Open-Meteo API
+    Accepts optional lat/lon query parameters
+    """
+    try:
+        # Get coordinates from query params or use default (Yangon)
+        lat = request.args.get('lat', 16.8661, type=float)
+        lon = request.args.get('lon', 96.1951, type=float)
+        days = request.args.get('days', 7, type=int)
+        
+        # Fetch forecast
+        forecast_data = get_rainfall_forecast(lat, lon, days)
+        
+        if not forecast_data.get('success'):
+            return jsonify({
+                'success': False,
+                'error': forecast_data.get('error', 'Failed to fetch forecast')
+            }), 500
+        
+        # Add weather descriptions
+        current = forecast_data.get('current', {})
+        current['weather_description'] = get_weather_description(current.get('weathercode', 0))
+        
+        for item in forecast_data.get('forecast', []):
+            item['weather_description'] = get_weather_description(item.get('weathercode', 0))
+        
+        return jsonify(forecast_data)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500 

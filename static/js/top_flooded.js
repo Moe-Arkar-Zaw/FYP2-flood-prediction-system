@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         loadTrendGraph();
 
     } catch (err) {
-        console.error("Error", err);
-        topStreetsList.innerHTML = `<p class='muted'>Error loading.</p>`;
+        console.error("Error loading top flooded streets:", err);
+        topStreetsList.innerHTML = `<p class='muted'>Error: ${err.message}</p>`;
     }
 
     // ------------------------------
@@ -59,10 +59,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         topStreetsList.innerHTML = "";
 
         streetsData.forEach((s, i) => {
+            const peakLevel = s.peak_water_level != null ? s.peak_water_level.toFixed(2) : 'N/A';
             topStreetsList.innerHTML += `
                 <div class="street-card fade-in" style="border-left:5px solid ${palette[i]}">
                     <div class="card-title">${s.display_name}</div>
-                    <div class="card-value">${s.peak_water_level.toFixed(2)} m</div>
+                    <div class="card-value">${peakLevel} m</div>
                     <span class="trend-tag ${s.trend}">
                         ${s.trend === "increasing" ? "⬆ Rising" :
                           s.trend === "decreasing" ? "⬇ Dropping" : "➡ Stable"}
@@ -75,13 +76,14 @@ document.addEventListener("DOMContentLoaded", async function () {
     function loadDetailedStatus() {
         detailedStatus.innerHTML = "";
         streetsData.forEach(s => {
+            const currentLevel = s.current_level != null ? s.current_level.toFixed(2) : 'N/A';
             detailedStatus.innerHTML += `
                 <div class="status-box fade-in">
                     <div class="status-title">
                         ${s.display_name}
                     </div>
                     <div class="status-level">
-                        <strong>${s.current_level.toFixed(2)} m</strong>
+                        <strong>${currentLevel} m</strong>
                     </div>
                     <div class="status-trend">
                         ${s.trend === "increasing" ? "📈 Increasing" :

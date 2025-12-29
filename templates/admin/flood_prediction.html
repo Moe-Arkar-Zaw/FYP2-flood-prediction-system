@@ -67,6 +67,11 @@
         <h2>Recent Predictions</h2>
         <p class="section-description">Last 5 predictions and average water level</p>
         
+        <!-- Chart -->
+        <div class="chart-container" style="margin-bottom: 30px;">
+            <canvas id="recentPredictionsChart"></canvas>
+        </div>
+        
         <div id="recentPredictions" class="recent-predictions">
             <p>Loading...</p>
         </div>
@@ -81,6 +86,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='js/admin_prediction.js') }}"></script>
 <style>
 .result-grid {
@@ -141,6 +147,13 @@
 .average-stats h3 {
     margin-top: 0;
     color: white;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin: 20px 0;
 }
 </style>
 {% endblock %}
