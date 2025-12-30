@@ -229,37 +229,102 @@ def list_predictions():
 # To publish alerts from admin panel to public dashboard (Admin Creates Alert)
 @admin_bp.route("/publish_alert", methods=['POST'])
 def publish_alert():
-    data = request.get_json()
+    try:
+        data = request.get_json()
 
-    prediction_id = data.get("prediction_id")
-    alert_message = data.get("alert_message")
+        alert_message = data.get("alert_message")
+        alert_type = data.get("alert_type", "estimation")  # 'estimation' or 'prediction'
 
-    if not prediction_id:
-        return jsonify({"error": "prediction_id is required"}), 400
-
-    if not alert_message:
-        return jsonify({"error": "alert_message is required"}), 400
-    
-    prediction = FloodPrediction.query.get(prediction_id)
-    if not prediction:
-        return jsonify({"error": "Prediction not found"}), 404
-    
-    new_alert = Alert(
-        prediction_id = prediction.prediction_id,
-        alert_message = alert_message
-    )
-
-    db.session.add(new_alert)
-    db.session.commit()
-
-    return jsonify({
-        "success": True,
-        "alert_id": new_alert.alert_id,
-        "prediction_id": prediction.prediction_id,
-        "street_id": prediction.street_id,
-        "severity": prediction.severity,
-        "message": alert_message
-    }), 200
+        if not alert_message:
+            return jsonify({"error": "alert_message is required"}), 400
+        
+        if alert_type == "estimation":
+            prediction_id = data.get("prediction_id")
+            if not prediction_id:
+                return jsonify({"error": "prediction_id is required for estimation alerts"}), 400
+            
+            prediction = FloodPrediction.query.get(prediction_id)
+            if not prediction:
+                return jsonify({"error": "Prediction not found"}), 404
+            
+            new_alert = Alert(
+                prediction_id=prediction.prediction_id,
+                alert_message=alert_message,
+                alert_type='estimation'
+            )
+            
+            db.session.add(new_alert)
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "alert_id": new_alert.alert_id,
+                "alert_type": "estimation",
+                "prediction_id": prediction.prediction_id,
+                "street_id": prediction.street_id,
+                "severity": prediction.severity,
+                "message": alert_message
+            }), 200
+        
+        elif alert_type == "prediction":
+            # For prediction alerts, we need to create a temporary prediction record
+            street_id = data.get("street_id")
+            water_level = data.get("water_level")
+            
+            if not street_id or water_level is None:
+                return jsonify({"error": "street_id and water_level required for prediction alerts"}), 400
+            
+            # Convert to int and float
+            street_id = int(street_id)
+            water_level = float(water_level)
+            
+            # Determine severity
+            if water_level < 0.3:
+                severity = 'normal'
+            elif water_level < 0.6:
+                severity = 'alert'
+            else:
+                severity = 'severe'
+            
+            # Create a prediction record for the forecast
+            new_prediction = FloodPrediction(
+                video_id=None,  # No video for predictions
+                street_id=street_id,
+                water_level=water_level,
+                severity=severity,
+                prediction_time=(datetime.now() + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)  # Next day at midnight
+            )
+            db.session.add(new_prediction)
+            db.session.flush()  # Get the prediction_id
+            
+            new_alert = Alert(
+                prediction_id=new_prediction.prediction_id,
+                alert_message=alert_message,
+                alert_type='prediction'
+            )
+            
+            db.session.add(new_alert)
+            db.session.commit()
+            
+            return jsonify({
+                "success": True,
+                "alert_id": new_alert.alert_id,
+                "alert_type": "prediction",
+                "prediction_id": new_prediction.prediction_id,
+                "street_id": street_id,
+                "severity": severity,
+                "message": alert_message
+            }), 200
+        
+        else:
+            return jsonify({"error": "Invalid alert_type"}), 400
+            
+    except Exception as e:
+        import traceback
+        print("ERROR in publish_alert:")
+        print(traceback.format_exc())
+        db.session.rollback()
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 # Alert render
 @admin_bp.route("/alerts", methods=["GET"])
@@ -267,6 +332,7 @@ def publish_alert():
 def admin_alerts_page():
     seven_days_ago = datetime.now() - timedelta(days=7)
 
+    # Get estimation data (from predictions table)
     predictions = FloodPrediction.query \
         .filter(FloodPrediction.prediction_time >= seven_days_ago) \
         .order_by(FloodPrediction.prediction_time.desc()) \
@@ -281,7 +347,38 @@ def admin_alerts_page():
             "severity": p.severity,
             "timestamp": p.prediction_time.strftime("%Y-%m-%d %H:%M:%S")
         })
-    return render_template("admin/alerts.html", predictions=formatted_predictions)
+    
+    # Get prediction forecast data (next day predictions)
+    from backend.services.time_series_forecaster import get_forecast_summary
+    forecasts = []
+    streets = Street.query.all()
+    
+    for street in streets:
+        try:
+            forecast_data = get_forecast_summary(street.street_id, history_days=30, forecast_days=1)
+            if forecast_data.get('forecast') and len(forecast_data['forecast']) > 0:
+                next_day = forecast_data['forecast'][0]
+                # Determine severity based on water level
+                water_level = next_day['water_level']
+                if water_level < 0.3:
+                    severity = 'normal'
+                elif water_level < 0.6:
+                    severity = 'alert'
+                else:
+                    severity = 'severe'
+                    
+                forecasts.append({
+                    "street_id": street.street_id,
+                    "street_name": street.street_name,
+                    "water_level": round(water_level, 3),
+                    "severity": severity,
+                    "prediction_date": next_day['timestamp']
+                })
+        except Exception as e:
+            print(f"Error getting forecast for street {street.street_id}: {e}")
+            continue
+    
+    return render_template("admin/alerts.html", predictions=formatted_predictions, forecasts=forecasts)
 
 
 # Time Series Forecasting Page

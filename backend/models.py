@@ -85,7 +85,7 @@ class FloodPrediction(db.Model):
     __tablename__ = "flood_predictions"
 
     prediction_id = db.Column(db.Integer, primary_key=True)
-    video_id = db.Column(db.Integer, db.ForeignKey("videos.video_id"), nullable=False)
+    video_id = db.Column(db.Integer, db.ForeignKey("videos.video_id"), nullable=True)  # Allow null for forecast predictions
     street_id = db.Column(db.Integer, db.ForeignKey("streets.street_id"), nullable=False)
     water_level = db.Column(db.Float)
     severity = db.Column(db.Enum('normal', 'alert', 'severe'), default='normal')
@@ -101,5 +101,7 @@ class Alert(db.Model):
     alert_id = db.Column(db.Integer, primary_key=True)
     prediction_id = db.Column(db.Integer, db.ForeignKey("flood_predictions.prediction_id"), nullable=False)
     alert_message = db.Column(db.String(255))
+    alert_type = db.Column(db.String(50), default='estimation')  # 'estimation' or 'prediction'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 

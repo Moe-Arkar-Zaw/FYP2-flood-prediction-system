@@ -6,14 +6,18 @@
 {% block content %}
 <div class="login-shell">
     <div class="login-card">
+        <div class="login-brand">
+            <h1>FloodSafe</h1>
+        </div>
+        
         <div class="login-header">
-            <h1>Welcome Back</h1>
-            <h2>Log In</h2>
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Log in to access your dashboard</p>
         </div>
 
         <form id="loginForm" class="login-form">
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" placeholder="you@example.com" required>
             </div>
 
@@ -22,15 +26,18 @@
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
 
-            <button type="submit" id="loginBtn" class="login-btn">Log In</button>
+            <button type="submit" id="loginBtn" class="login-btn">
+                <span>Log In</span>
+            </button>
 
             <div id="loginMessage" class="login-message"></div>
         </form>
 
-        <p class="login-footer">
-            Don't have an account? 
-            <a href="{{ url_for('auth.signup_page') }}">Sign up here</a>
-        </p>
+        <div class="login-divider">
+            <span>New to FloodSafe?</span>
+        </div>
+
+        <a href="{{ url_for('auth.signup_page') }}" class="signup-link-btn">Create an Account</a>
     </div>
 </div>
 {% endblock %}

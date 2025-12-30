@@ -91,11 +91,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 alerts.forEach((a) => {
                     const severityClass = a.severity ? `tag ${a.severity}` : "badge";
                     const displayName = cleanStreetName(a.street_name);
+                    
+                    // Determine alert type badge
+                    const alertType = a.alert_type || 'estimation';
+                    const waterLevel = a.water_level != null ? a.water_level.toFixed(2) : 'N/A';
+                    const typeBadge = alertType === 'estimation' 
+                        ? `<span class="type-badge estimation">Estimation: ${waterLevel}m</span>` 
+                        : `<span class="type-badge prediction">Prediction: ${waterLevel}m</span>`;
+                    
                     alertsList.innerHTML += `
-                        <div class="alert-item">
+                        <div class="alert-item ${alertType}">
                             <div class="alert-top">
                                 <strong>${displayName}</strong>
-                                <span class="${severityClass}">${(a.severity || "alert").toUpperCase()}</span>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    ${typeBadge}
+                                    <span class="${severityClass}">${(a.severity || "alert").toUpperCase()}</span>
+                                </div>
                             </div>
                             <div>${a.alert_message || "Flood activity detected."}</div>
                             <div class="alert-meta">${a.prediction_time}</div>

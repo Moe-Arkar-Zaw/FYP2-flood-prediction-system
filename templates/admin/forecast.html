@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Flood Forecast - Admin{% endblock %}
+{% block title %}Flood Prediction - Admin{% endblock %}
 
 {% block content %}
 <div class="page-container admin-page">
     {% set active_tab = 'forecast' %}
     {% include "components/admin_tabs.html" with context %}
     
-    <h1 class="page-title">Water Level Forecasting</h1>
-    <p class="page-subtitle">Time series prediction of future flood levels based on historical data</p>
+    <h1 class="page-title">Water Level Prediction</h1>
+    <p class="page-subtitle">Next day water level prediction based on historical data</p>
 
     <!-- Street Filter -->
     <section class="card filter-card">
@@ -23,7 +23,7 @@
                 {% endfor %}
             </select>
             
-            <button id="loadForecastBtn" class="btn primary-btn">Load Forecast</button>
+            <button id="loadForecastBtn" class="btn primary-btn">Load Prediction</button>
         </div>
     </section>
 
@@ -52,9 +52,9 @@
 
     <!-- Forecast Chart -->
     <section class="card chart-card">
-        <h2>Water Level Forecast</h2>
+        <h2>Water Level Prediction</h2>
         <div id="loadingMessage" class="loading-message">
-            Select a street and click "Load Forecast" to view predictions
+            Select a street and click "Load Prediction" to view predictions
         </div>
         <div class="chart-container" style="display:none;" id="chartContainer">
             <canvas id="forecastChart"></canvas>
@@ -63,9 +63,9 @@
 
     <!-- Forecast Table -->
     <section class="card table-card">
-        <h2>7-Day Forecast Details</h2>
+        <h2>Next Day Prediction Details</h2>
         <div id="forecastTable">
-            <p class="empty-message">No forecast data available</p>
+            <p class="empty-message">No prediction data available</p>
         </div>
     </section>
 </div>

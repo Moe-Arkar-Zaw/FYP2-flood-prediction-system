@@ -17,12 +17,12 @@ async function loadForecast() {
     const loadingMsg = document.getElementById("loadingMessage");
     const chartContainer = document.getElementById("chartContainer");
     
-    loadingMsg.textContent = "Loading forecast...";
+    loadingMsg.textContent = "Loading prediction...";
     loadingMsg.style.display = "block";
     chartContainer.style.display = "none";
     
     try {
-        const url = `/admin/api/forecast?street_id=${streetId}&history_days=30&forecast_days=7`;
+        const url = `/admin/api/forecast?street_id=${streetId}&history_days=30&forecast_days=1`;
         const response = await fetch(url);
         
         if (!response.ok) {
@@ -103,6 +103,10 @@ function createForecastChart(data) {
     // Combine labels
     const allLabels = [...historicalLabels, ...forecastLabels];
     
+    // Connect forecast to last historical point
+    const lastHistoricalValue = historicalValues.length > 0 ? historicalValues[historicalValues.length - 1] : null;
+    const connectedForecastData = [...Array(historical.length - 1).fill(null), lastHistoricalValue, ...forecastValues];
+    
     // Destroy existing chart
     if (forecastChart) {
         forecastChart.destroy();
@@ -123,8 +127,8 @@ function createForecastChart(data) {
                     fill: true
                 },
                 {
-                    label: 'Forecasted Water Level',
-                    data: [...Array(historical.length).fill(null), ...forecastValues],
+                    label: 'Predicted Water Level',
+                    data: connectedForecastData,
                     borderColor: '#f59e0b',
                     backgroundColor: 'rgba(245, 158, 11, 0.1)',
                     borderDash: [5, 5],

@@ -10,7 +10,6 @@ user_bp = Blueprint("user_bp", __name__)
 
 # Publish dashboard page
 @user_bp.route("/public_dashboard", methods=["GET"])
-@login_required
 def dashboard_page():
     return render_template("user/dashboard.html")
 
@@ -47,7 +46,8 @@ def dashboard_data():
             "water_level": alert.prediction.water_level,
             "severity": alert.prediction.severity,
             "prediction_time": alert.prediction.prediction_time.strftime("%Y-%m-%d %H:%M:%S"),
-            "alert_message": alert.alert_message
+            "alert_message": alert.alert_message,
+            "alert_type": alert.alert_type if hasattr(alert, 'alert_type') else 'estimation'
         } for alert in alerts_query]
 
         # 2) Top 3 areas by severity
@@ -135,16 +135,9 @@ def rainfall_forecast():
         return jsonify(forecast_data)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500 
-
-''' 
-@user_bp.route("/api/route-finder", methods=["GET"])
-@login_required
-def route_finder():
-    return render_template("user/route_finder.html")'''
+        return jsonify({"error": str(e)}), 500
 
 @user_bp.route("/api/route-finder")
-@login_required
 def route_finder():
     streets = Street.query.all()
 
@@ -161,7 +154,6 @@ def route_finder():
 
 
 @user_bp.route("/api/find-safest-route", methods=["POST"])
-#@login_required
 def find_safest_route_api():
     data = request.json 
     start = data.get("start")

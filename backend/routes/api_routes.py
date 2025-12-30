@@ -7,7 +7,6 @@ api_bp = Blueprint("api_bp", __name__)
 
 
 @api_bp.route("/top-flooded-streets-page", methods=["GET"])
-@login_required
 def top_flooded_streets_page():
     return render_template("user/top_flooded.html")
 
@@ -24,7 +23,6 @@ def flood_trend(street_id):
 
 
 @api_bp.route("/emergency", methods=["GET"])
-@login_required 
 def emergency_page():
     return render_template("user/emergency.html")
 

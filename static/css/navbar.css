@@ -144,6 +144,43 @@
     display: block;
 }
 
+.auth-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.auth-buttons .btn-link {
+    padding: 8px 18px;
+    color: #1f2a3d;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.auth-buttons .btn-link:hover {
+    background: rgba(79, 139, 255, 0.08);
+    color: #4f8bff;
+}
+
+.auth-buttons .btn-primary {
+    padding: 8px 18px;
+    background: linear-gradient(135deg, #4f8bff 0%, #ff6fd6 100%);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.auth-buttons .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(79, 139, 255, 0.3);
+}
+
 .nav-toggle {
     display: none;
     background: none;

@@ -32,7 +32,11 @@ def create_app():
 
     @app.route("/")
     def home():
-        return redirect(url_for('auth.signup_page'))
+        return redirect(url_for('public_dashboard'))
+    
+    @app.route("/public_dashboard")
+    def public_dashboard():
+        return render_template("user/dashboard.html")
     
     @app.context_processor
     def inject_user():

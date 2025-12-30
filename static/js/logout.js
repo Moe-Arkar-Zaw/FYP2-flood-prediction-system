@@ -8,15 +8,20 @@ document.addEventListener("DOMContentLoaded", () => {
             fetch("/auth/logout", {       
                 method: "POST"
             })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = "/auth/login-page"; // Redirect to login page
-                } else {
-                    alert("Logout failed.");
+            .then(r => {
+                if (r.ok) {
+                    return r.json();
                 }
+                throw new Error("Logout failed");
             })
-            .catch(() => alert("Logout error"));
+            .then(data => {
+                // Redirect to homepage after successful logout
+                window.location.href = "/public_dashboard";
+            })
+            .catch(() => {
+                // Even if there's an error, redirect to homepage
+                window.location.href = "/public_dashboard";
+            });
         });
     }
 });

@@ -7,11 +7,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeBtn = document.getElementById("closeModalBtn");
 
     let selectedPredictionId = null;
+    let selectedAlertType = null;
+    let selectedStreetId = null;
+    let selectedWaterLevel = null;
 
     // Open modal
     document.querySelectorAll(".publish-btn").forEach(btn => {
         btn.addEventListener("click", function () {
-            selectedPredictionId = this.dataset.predictionId;
+            selectedAlertType = this.dataset.alertType;
+            
+            if (selectedAlertType === "estimation") {
+                selectedPredictionId = this.dataset.predictionId;
+            } else if (selectedAlertType === "prediction") {
+                selectedStreetId = this.dataset.streetId;
+                selectedWaterLevel = this.dataset.waterLevel;
+            }
+            
             alertMessage.value = "";
             modal.classList.remove("hidden");
         });
@@ -31,20 +42,30 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        let requestBody = {
+            alert_message: message,
+            alert_type: selectedAlertType
+        };
+
+        if (selectedAlertType === "estimation") {
+            requestBody.prediction_id = selectedPredictionId;
+        } else if (selectedAlertType === "prediction") {
+            requestBody.street_id = selectedStreetId;
+            requestBody.water_level = parseFloat(selectedWaterLevel);
+        }
+
         fetch("/admin/publish_alert", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                prediction_id: selectedPredictionId,
-                alert_message: message
-            })
+            body: JSON.stringify(requestBody)
         })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                alert("Alert published successfully!");
+                const alertTypeName = selectedAlertType === "estimation" ? "Estimation" : "Prediction";
+                alert(`${alertTypeName} alert published successfully!`);
                 modal.classList.add("hidden");
-                location.reload(); // optional but useful
+                location.reload();
             } else {
                 alert("Error: " + (data.error || "Unknown error"));
             }
